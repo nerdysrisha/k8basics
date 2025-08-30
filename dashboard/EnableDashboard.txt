@@ -1,0 +1,81 @@
+Pre-requisites
+
+1. Have Kubernetes running locally (or on Cloud VM)
+
+Step1: Run below command
+
+ kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
+ 
+Step2: Get Kubernetes dashboard pods
+
+	PS C:\ws> kubectl get pods -n kubernetes-dashboard
+	NAME                                         READY   STATUS    RESTARTS       AGE
+	dashboard-metrics-scraper-6b96ff7878-9lhbs   1/1     Running   2 (105m ago)   16h
+	kubernetes-dashboard-8696f5f494-pjbxl        1/1     Running   2 (105m ago)   16h
+	PS C:\ws>
+
+
+Step3: Create a file 'dashboard-admin-local.yaml' 
+
+ 
+		apiVersion: v1
+		kind: ServiceAccount
+		metadata:
+		  name: dashboard-admin
+		  namespace: kubernetes-dashboard
+		automountServiceAccountToken: true
+		---
+		apiVersion: v1
+		kind: Secret
+		metadata:
+		  name: dashboard-admin-secret
+		  namespace: kubernetes-dashboard
+		  annotations:
+		    kubernetes.io/service-account.name: dashboard-admin
+		type: kubernetes.io/service-account-token
+		---
+		apiVersion: rbac.authorization.k8s.io/v1
+		kind: ClusterRoleBinding
+		metadata:
+		  name: dashboard-admin-binding
+		roleRef:
+		  apiGroup: rbac.authorization.k8s.io
+		  kind: ClusterRole
+		  name: cluster-admin
+		subjects:
+		- kind: ServiceAccount
+		  name: dashboard-admin
+		  namespace: kubernetes-dashboard
+
+
+
+Step4: Apply 
+
+	kubectl apply -f .\dashboard-admin-local.yaml
+
+
+
+Step5: Fetch Token 
+
+
+
+	kubectl -n kubernetes-dashboard describe secret dashboard-admin-secret | grep -E '^token' | awk '{print $2}'
+
+
+Step6: Start the proxy 
+
+
+	kubectl proxy
+	
+	
+Step7: Access the dashboard 
+
+	http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#/login
+	
+
+Step8: Use the Token 
+
+
+Step9: Optional. Spinup any pod to see it on the dashboard 
+
+  
