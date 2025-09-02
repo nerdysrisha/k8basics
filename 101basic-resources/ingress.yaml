@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hworld-ingress
+  namespace: integrations
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /ing1
+            pathType: Prefix
+            backend:
+              service:
+                name: ing1-service
+                port:
+                  number: 8081
+          - path: /ing2
+            pathType: Prefix
+            backend:
+              service:
+                name: ing2-service
+                port:
+                  number: 8082

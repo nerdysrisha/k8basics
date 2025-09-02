@@ -14,7 +14,7 @@ spec:
         app: nginx
     spec:
       nodeSelector:
-        kubernetes.io/hostname: desktop-worker2   # 👈 force schedule here
+        kubernetes.io/hostname: intg-ks-worker2   # 👈 force schedule here
       containers:
       - name: nginx
         image: nginx:latest

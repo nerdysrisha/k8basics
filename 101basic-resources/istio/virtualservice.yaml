@@ -1,0 +1,27 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: hworld-virtualservice
+  namespace: integrations
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - hworld-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /ing1
+    route:
+    - destination:
+        host: ing1-service.integrations.svc.cluster.local
+        port:
+          number: 8081
+  - match:
+    - uri:
+        prefix: /ing2
+    route:
+    - destination:
+        host: ing2-service.integrations.svc.cluster.local
+        port:
+          number: 8082
