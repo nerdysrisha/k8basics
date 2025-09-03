@@ -1,15 +1,15 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: hworld-gateway
-  namespace: integrations
+  name: intg-services-gateway
+  namespace: istio-system  # Centralized management in istio-system namespace
 spec:
   selector:
-    istio: ingressgateway
+    istio: ingressgateway  # Uses the default Istio ingress gateway pod
   servers:
   - port:
-      number: 80
+      number: 80           # Listens on port 80 for HTTP traffic
       name: http
       protocol: HTTP
     hosts:
-    - "*"
+    - "*"                  # Accepts traffic for all hosts (wildcard)
