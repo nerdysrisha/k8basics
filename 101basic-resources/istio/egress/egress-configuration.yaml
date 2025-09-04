@@ -1,75 +1,73 @@
-# 1. ServiceEntry - Allow specific external HTTPS traffic
+# 1. ServiceEntry - allow external HTTP traffic
 apiVersion: networking.istio.io/v1alpha3
 kind: ServiceEntry
 metadata:
-  name: intg-allow-all-https-serviceentry
+  name: allow-httpbin-http
   namespace: istio-system
 spec:
   hosts:
-  - "jsonplaceholder.typicode.com"
-  - "api.publicapis.org"
-  - "catfact.ninja"
-  - "official-joke-api.appspot.com"
-  - "api.agify.io"
+  - "httpbin.org"
   ports:
-  - number: 443
-    name: https
-    protocol: HTTPS
+  - number: 80
+    name: http
+    protocol: HTTP
   resolution: DNS
   location: MESH_EXTERNAL
 
 ---
-# 2. Gateway - Configure egress gateway for external HTTPS traffic
+# 2. Gateway - configure egress gateway for HTTP
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: intg-egress-gateway
+  name: egress-httpbin-gateway
   namespace: istio-system
 spec:
   selector:
     istio: egressgateway
   servers:
   - port:
-      number: 443
-      name: https
-      protocol: HTTPS
+      number: 80
+      name: http
+      protocol: HTTP
     hosts:
-    - "jsonplaceholder.typicode.com"
-    - "api.publicapis.org"
-    - "catfact.ninja"
-    - "official-joke-api.appspot.com"
-    - "api.agify.io"
-    tls:
-      mode: PASSTHROUGH
+    - "httpbin.org"
 
 ---
-# 3. VirtualService - Route HTTPS traffic through egress gateway
+# 3. VirtualService - route traffic via egress gateway
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: intg-all-https-egress-virtualservice
+  name: route-httpbin-through-egress
   namespace: istio-system
 spec:
   hosts:
-  - "jsonplaceholder.typicode.com"
-  - "api.publicapis.org"
-  - "catfact.ninja"
-  - "official-joke-api.appspot.com"
-  - "api.agify.io"
+  - "httpbin.org"
   gateways:
   - mesh
-  tls:
+  - egress-httpbin-gateway
+  http:
   - match:
-    - port: 443
-      sniHosts:
-      - "jsonplaceholder.typicode.com"
-      - "api.publicapis.org"
-      - "catfact.ninja"
-      - "official-joke-api.appspot.com"
-      - "api.agify.io"
+    - port: 80
     route:
     - destination:
         host: istio-egressgateway.istio-system.svc.cluster.local
         port:
-          number: 443
-      weight: 100
+          number: 80
+
+
+---
+# 4. DestinationRule for egress gateway (HTTP does not need TLS)
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: dr-egressgateway-http
+  namespace: istio-system
+spec:
+  host: istio-egressgateway.istio-system.svc.cluster.local
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 100
+      http:
+        http1MaxPendingRequests: 100
+        maxRequestsPerConnection: 100
