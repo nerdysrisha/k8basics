@@ -1,6 +1,9 @@
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 nodes:
-  - role: control-plane
-  - role: worker
-  - role: worker
+- role: control-plane
+  # Control plane node - no extraOptions needed
+- role: worker
+  # First worker node
+- role: worker
+  # Second worker node
