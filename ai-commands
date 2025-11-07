@@ -3,3 +3,5 @@ az vm list-skus --resource-type virtualMachines --query "[?starts_with(name, 'DC
 
 az vm list-skus --resource-type virtualMachines --query "[?contains(capabilities[?name=='ConfidentialComputeType'].value | [0], 'SEV-SNP')].{Name:name, Regions:locations}" --output table
 
+
+az vm list-skus --resource-type virtualMachines --query "[?name=='Standard_DC16as_v5'].{Name:name, Regions:locations}" --output table
