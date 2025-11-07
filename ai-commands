@@ -8,3 +8,8 @@ az vm list-skus --resource-type virtualMachines --query "[?name=='Standard_DC16a
 
 #List which region supports confidential VMs
 az vm list-skus --resource-type virtualMachines --query "[?name=='Standard_DC16as_v5'].locations" --output table
+
+
+#Check permissions 
+
+az role assignment list --assignee $(az ad signed-in-user show --query objectId -o tsv) --output table
