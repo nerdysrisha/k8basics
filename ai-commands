@@ -5,3 +5,6 @@ az vm list-skus --resource-type virtualMachines --query "[?contains(capabilities
 
 
 az vm list-skus --resource-type virtualMachines --query "[?name=='Standard_DC16as_v5'].{Name:name, Regions:locations}" --output table
+
+#List which region supports confidential VMs
+az vm list-skus --resource-type virtualMachines --query "[?name=='Standard_DC16as_v5'].locations" --output table
