@@ -1,1 +1,5 @@
 az vm list-skus --resource-type virtualMachines --query "[?starts_with(name, 'DCa') && contains(capabilities[?name=='ConfidentialComputeType'].value | [0], 'SEV-SNP')].{Name:name, Regions:locations}" --output table
+
+
+az vm list-skus --resource-type virtualMachines --query "[?contains(capabilities[?name=='ConfidentialComputeType'].value | [0], 'SEV-SNP')].{Name:name, Regions:locations}" --output table
+
